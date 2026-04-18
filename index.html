@@ -95,20 +95,10 @@
             min-width: 110px;
             height: 52px;
             box-sizing: border-box;
-            transform: none;
         }
 
         button:hover {
             filter: brightness(0.95);
-        }
-
-        button:active {
-            filter: brightness(0.9);
-            transform: none;
-        }
-
-        button:focus {
-            outline: none;
         }
 
         #yesBtn {
@@ -121,18 +111,9 @@
         #noBtn {
             left: 190px;
             top: 20px;
-            right: auto;
             background: #fff;
             color: #d94f7d;
             border: 1px solid pink;
-        }
-
-        #result {
-            margin-top: 15px;
-            font-size: clamp(28px, 5vw, 36px);
-            color: #ff4f8b;
-            min-height: 40px;
-            font-weight: bold;
         }
 
         #overlay {
@@ -156,19 +137,21 @@
         }
 
         .final-text {
-            font-size: clamp(38px, 8vw, 76px);
-            line-height: 1.15;
+            font-size: clamp(32px, 7vw, 76px);
+            line-height: 1.2;
             color: #ff3f7f;
             font-weight: bold;
             text-shadow: 0 6px 18px rgba(255, 90, 140, 0.2);
             animation: wowPop 0.8s ease;
+            max-width: 90vw;
+            word-wrap: break-word;
+            text-align: center;
         }
 
         .sparkle {
             position: absolute;
             font-size: 20px;
             animation: sparkleUp linear forwards;
-            pointer-events: none;
         }
 
         @keyframes pulse {
@@ -177,40 +160,19 @@
         }
 
         @keyframes floatUp {
-            from {
-                transform: translateY(0);
-                opacity: 0.7;
-            }
-            to {
-                transform: translateY(-110vh);
-                opacity: 0;
-            }
+            from { transform: translateY(0); opacity: 0.7; }
+            to { transform: translateY(-110vh); opacity: 0; }
         }
 
         @keyframes sparkleUp {
-            0% {
-                transform: translateY(0) scale(0.8);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-90vh) scale(1.2);
-                opacity: 0;
-            }
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-90vh); opacity: 0; }
         }
 
         @keyframes wowPop {
-            0% {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            70% {
-                transform: scale(1.1);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
@@ -229,8 +191,6 @@
         <button id="yesBtn">YES</button>
         <button id="noBtn">NO</button>
     </div>
-
-    <div id="result"></div>
 </div>
 
 <div id="overlay">
@@ -244,7 +204,6 @@
 <script>
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
-const result = document.getElementById("result");
 const buttonsBox = document.getElementById("buttonsBox");
 const backgroundHearts = document.getElementById("backgroundHearts");
 const overlay = document.getElementById("overlay");
@@ -254,60 +213,51 @@ function moveNoButton() {
     const maxX = buttonsBox.clientWidth - noBtn.offsetWidth;
     const maxY = buttonsBox.clientHeight - noBtn.offsetHeight;
 
-    const newX = Math.random() * maxX;
-    const newY = Math.random() * maxY;
-
-    noBtn.style.right = "auto";
-    noBtn.style.left = newX + "px";
-    noBtn.style.top = newY + "px";
+    noBtn.style.left = Math.random() * maxX + "px";
+    noBtn.style.top = Math.random() * maxY + "px";
 }
 
 noBtn.addEventListener("mouseenter", moveNoButton);
 noBtn.addEventListener("touchstart", function(e) {
     e.preventDefault();
     moveNoButton();
-}, { passive: false });
+});
 
 yesBtn.addEventListener("click", function() {
     card.classList.add("hide");
 
     setTimeout(() => {
         overlay.classList.add("show");
-        createBigCelebration();
-    }, 350);
+        createHearts();
+    }, 300);
 });
 
-function createBigCelebration() {
+function createHearts() {
     for (let i = 0; i < 40; i++) {
         const heart = document.createElement("div");
         heart.className = "sparkle";
-        heart.textContent = ["💖", "💕", "💘", "💗", "✨", "🌸"][Math.floor(Math.random() * 6)];
-        heart.style.left = Math.random() * 100 + "vw";
-        heart.style.bottom = "-10px";
-        heart.style.fontSize = (18 + Math.random() * 28) + "px";
-        heart.style.animationDuration = (2.5 + Math.random() * 2.5) + "s";
+        heart.textContent = ["💖","💕","💘","💗","✨"][Math.floor(Math.random()*5)];
+        heart.style.left = Math.random()*100 + "vw";
+        heart.style.bottom = "0px";
+        heart.style.animationDuration = (2 + Math.random()*2) + "s";
 
         document.body.appendChild(heart);
 
-        setTimeout(() => {
-            heart.remove();
-        }, 5500);
+        setTimeout(()=> heart.remove(), 4000);
     }
 }
 
 function floatingBackgroundHearts() {
     const heart = document.createElement("div");
     heart.className = "floating-heart";
-    heart.textContent = ["💗", "💕", "💖", "♡"][Math.floor(Math.random() * 4)];
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = (15 + Math.random() * 25) + "px";
-    heart.style.animationDuration = (6 + Math.random() * 5) + "s";
+    heart.textContent = "💗";
+    heart.style.left = Math.random()*100 + "vw";
+    heart.style.fontSize = (15 + Math.random()*25) + "px";
+    heart.style.animationDuration = (6 + Math.random()*5) + "s";
 
     backgroundHearts.appendChild(heart);
 
-    setTimeout(() => {
-        heart.remove();
-    }, 11000);
+    setTimeout(()=> heart.remove(), 11000);
 }
 
 setInterval(floatingBackgroundHearts, 700);
