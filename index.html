@@ -81,11 +81,16 @@
             border-radius: 999px;
             border: none;
             cursor: pointer;
-            transition: 0.2s;
+            transition: left 0.25s ease, top 0.25s ease, filter 0.2s ease;
         }
 
+        /* brak zmiany rozmiaru */
         button:hover {
-            transform: scale(1.08);
+            filter: brightness(0.95);
+        }
+
+        button:active {
+            filter: brightness(0.9);
         }
 
         #yesBtn {
@@ -142,7 +147,6 @@
     <h1>date with me 18:30 💖</h1>
     <div class="subtitle">so... what do you say? 💕</div>
 
-    <!-- PODMIEŃ NAZWĘ ZDJĘCIA -->
     <img src="foto.jpeg" alt="Zdjęcie">
 
     <div class="buttons" id="buttonsBox">
@@ -164,12 +168,14 @@ function moveNoButton() {
     const maxX = buttonsBox.clientWidth - noBtn.offsetWidth;
     const maxY = buttonsBox.clientHeight - noBtn.offsetHeight;
 
-    noBtn.style.left = Math.random() * maxX + "px";
-    noBtn.style.top = Math.random() * maxY + "px";
+    const newX = Math.random() * maxX;
+    const newY = Math.random() * maxY;
+
+    noBtn.style.left = newX + "px";
+    noBtn.style.top = newY + "px";
 }
 
 noBtn.addEventListener("mouseenter", moveNoButton);
-
 noBtn.addEventListener("touchstart", function(e) {
     e.preventDefault();
     moveNoButton();
