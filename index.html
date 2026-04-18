@@ -129,6 +129,7 @@
             z-index: 999;
             padding: 24px;
             text-align: center;
+            overflow: hidden;
         }
 
         #overlay.show {
@@ -136,7 +137,17 @@
             pointer-events: auto;
         }
 
+        #overlayEffects {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1002;
+        }
+
         .final-text {
+            position: relative;
+            z-index: 1001;
             max-width: 92vw;
             color: #ff3f7f;
             font-weight: bold;
@@ -163,11 +174,12 @@
         }
 
         .sparkle {
-            position: fixed;
+            position: absolute;
             font-size: 24px;
             pointer-events: none;
-            z-index: 1001;
+            z-index: 1003;
             filter: drop-shadow(0 0 6px rgba(255, 100, 150, 0.55));
+            will-change: transform, opacity;
         }
 
         .sparkle-up {
@@ -248,6 +260,8 @@
 </div>
 
 <div id="overlay">
+    <div id="overlayEffects"></div>
+
     <div class="final-text">
         <div class="final-line-1">YAAAAAY 💘</div>
         <div class="final-line-2">SEE YOU AT 18:30</div>
@@ -261,11 +275,12 @@ const noBtn = document.getElementById("noBtn");
 const buttonsBox = document.getElementById("buttonsBox");
 const backgroundHearts = document.getElementById("backgroundHearts");
 const overlay = document.getElementById("overlay");
+const overlayEffects = document.getElementById("overlayEffects");
 const card = document.getElementById("card");
 
 function moveNoButton() {
-    const maxX = buttonsBox.clientWidth - noBtn.offsetWidth;
-    const maxY = buttonsBox.clientHeight - noBtn.offsetHeight;
+    const maxX = Math.max(0, buttonsBox.clientWidth - noBtn.offsetWidth);
+    const maxY = Math.max(0, buttonsBox.clientHeight - noBtn.offsetHeight);
 
     noBtn.style.left = Math.random() * maxX + "px";
     noBtn.style.top = Math.random() * maxY + "px";
@@ -284,6 +299,7 @@ yesBtn.addEventListener("click", function() {
         overlay.classList.add("show");
         createHeartsRain();
         createHeartExplosion();
+        setTimeout(createHeartExplosion, 250);
     }, 300);
 });
 
@@ -291,12 +307,12 @@ function createHeartsRain() {
     for (let i = 0; i < 28; i++) {
         const heart = document.createElement("div");
         heart.className = "sparkle sparkle-up";
-        heart.textContent = ["💖", "💕", "💘", "💗", "✨"][Math.floor(Math.random() * 5)];
-        heart.style.left = Math.random() * 100 + "vw";
+        heart.textContent = ["💖", "💕", "💘", "💗", "✨"].at(Math.floor(Math.random() * 5));
+        heart.style.left = Math.random() * 100 + "%";
         heart.style.bottom = "-10px";
         heart.style.animationDuration = (2.2 + Math.random() * 2.2) + "s";
 
-        document.body.appendChild(heart);
+        overlayEffects.appendChild(heart);
 
         setTimeout(() => {
             heart.remove();
@@ -305,21 +321,22 @@ function createHeartsRain() {
 }
 
 function createHeartExplosion() {
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
+    const rect = overlayEffects.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
 
-    for (let i = 0; i < 42; i++) {
+    for (let i = 0; i < 46; i++) {
         const heart = document.createElement("div");
         heart.className = "sparkle sparkle-burst";
-        heart.textContent = ["💖", "💕", "💘", "💗", "✨", "🌸"][Math.floor(Math.random() * 6)];
+        heart.textContent = ["💖", "💕", "💘", "💗", "✨", "🌸"].at(Math.floor(Math.random() * 6));
 
         const angle = Math.random() * Math.PI * 2;
-        const distance = 90 + Math.random() * 260;
+        const distance = 100 + Math.random() * Math.min(rect.width, rect.height) * 0.35;
         const dx = Math.cos(angle) * distance;
         const dy = Math.sin(angle) * distance;
         const rotation = (-180 + Math.random() * 360) + "deg";
-        const size = 20 + Math.random() * 26;
-        const duration = 900 + Math.random() * 900;
+        const size = 22 + Math.random() * 24;
+        const duration = 1000 + Math.random() * 900;
 
         heart.style.left = centerX + "px";
         heart.style.top = centerY + "px";
@@ -329,18 +346,18 @@ function createHeartExplosion() {
         heart.style.setProperty("--rot", rotation);
         heart.style.setProperty("--burst-duration", duration + "ms");
 
-        document.body.appendChild(heart);
+        overlayEffects.appendChild(heart);
 
         setTimeout(() => {
             heart.remove();
-        }, duration + 200);
+        }, duration + 250);
     }
 }
 
 function floatingBackgroundHearts() {
     const heart = document.createElement("div");
     heart.className = "floating-heart";
-    heart.textContent = ["💗", "💕", "💖", "♡"][Math.floor(Math.random() * 4)];
+    heart.textContent = ["💗", "💕", "💖", "♡"].at(Math.floor(Math.random() * 4));
     heart.style.left = Math.random() * 100 + "vw";
     heart.style.fontSize = (15 + Math.random() * 25) + "px";
     heart.style.animationDuration = (6 + Math.random() * 5) + "s";
