@@ -27,6 +27,7 @@
             inset: 0;
             pointer-events: none;
             overflow: hidden;
+            z-index: 1;
         }
 
         .floating-heart {
@@ -162,9 +163,19 @@
         }
 
         .sparkle {
-            position: absolute;
-            font-size: 20px;
+            position: fixed;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 1001;
+            filter: drop-shadow(0 0 6px rgba(255, 100, 150, 0.55));
+        }
+
+        .sparkle-up {
             animation: sparkleUp linear forwards;
+        }
+
+        .sparkle-burst {
+            animation: burstOut var(--burst-duration, 1400ms) cubic-bezier(.2,.8,.2,1) forwards;
         }
 
         @keyframes pulse {
@@ -173,13 +184,43 @@
         }
 
         @keyframes floatUp {
-            from { transform: translateY(0); opacity: 0.7; }
-            to { transform: translateY(-110vh); opacity: 0; }
+            from {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+            to {
+                transform: translateY(-110vh);
+                opacity: 0;
+            }
         }
 
         @keyframes sparkleUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-90vh); opacity: 0; }
+            0% {
+                transform: translateY(0) scale(0.85);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-90vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        @keyframes burstOut {
+            0% {
+                transform: translate(-50%, -50%) translate(0, 0) scale(0.4) rotate(0deg);
+                opacity: 0;
+            }
+            15% {
+                opacity: 1;
+            }
+            100% {
+                transform:
+                    translate(-50%, -50%)
+                    translate(calc(var(--dx) * 1px), calc(var(--dy) * 1px))
+                    scale(1.15)
+                    rotate(var(--rot));
+                opacity: 0;
+            }
         }
 
         @keyframes wowPop {
@@ -241,36 +282,74 @@ yesBtn.addEventListener("click", function() {
 
     setTimeout(() => {
         overlay.classList.add("show");
-        createHearts();
+        createHeartsRain();
+        createHeartExplosion();
     }, 300);
 });
 
-function createHearts() {
-    for (let i = 0; i < 40; i++) {
+function createHeartsRain() {
+    for (let i = 0; i < 28; i++) {
         const heart = document.createElement("div");
-        heart.className = "sparkle";
-        heart.textContent = ["💖","💕","💘","💗","✨"][Math.floor(Math.random() * 5)];
+        heart.className = "sparkle sparkle-up";
+        heart.textContent = ["💖", "💕", "💘", "💗", "✨"][Math.floor(Math.random() * 5)];
         heart.style.left = Math.random() * 100 + "vw";
-        heart.style.bottom = "0px";
-        heart.style.animationDuration = (2 + Math.random() * 2) + "s";
+        heart.style.bottom = "-10px";
+        heart.style.animationDuration = (2.2 + Math.random() * 2.2) + "s";
 
         document.body.appendChild(heart);
 
-        setTimeout(() => heart.remove(), 4000);
+        setTimeout(() => {
+            heart.remove();
+        }, 5000);
+    }
+}
+
+function createHeartExplosion() {
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    for (let i = 0; i < 42; i++) {
+        const heart = document.createElement("div");
+        heart.className = "sparkle sparkle-burst";
+        heart.textContent = ["💖", "💕", "💘", "💗", "✨", "🌸"][Math.floor(Math.random() * 6)];
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 90 + Math.random() * 260;
+        const dx = Math.cos(angle) * distance;
+        const dy = Math.sin(angle) * distance;
+        const rotation = (-180 + Math.random() * 360) + "deg";
+        const size = 20 + Math.random() * 26;
+        const duration = 900 + Math.random() * 900;
+
+        heart.style.left = centerX + "px";
+        heart.style.top = centerY + "px";
+        heart.style.fontSize = size + "px";
+        heart.style.setProperty("--dx", dx.toFixed(0));
+        heart.style.setProperty("--dy", dy.toFixed(0));
+        heart.style.setProperty("--rot", rotation);
+        heart.style.setProperty("--burst-duration", duration + "ms");
+
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+        }, duration + 200);
     }
 }
 
 function floatingBackgroundHearts() {
     const heart = document.createElement("div");
     heart.className = "floating-heart";
-    heart.textContent = "💗";
+    heart.textContent = ["💗", "💕", "💖", "♡"][Math.floor(Math.random() * 4)];
     heart.style.left = Math.random() * 100 + "vw";
     heart.style.fontSize = (15 + Math.random() * 25) + "px";
     heart.style.animationDuration = (6 + Math.random() * 5) + "s";
 
     backgroundHearts.appendChild(heart);
 
-    setTimeout(() => heart.remove(), 11000);
+    setTimeout(() => {
+        heart.remove();
+    }, 11000);
 }
 
 setInterval(floatingBackgroundHearts, 700);
